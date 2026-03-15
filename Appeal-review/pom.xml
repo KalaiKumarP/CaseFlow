@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ================================================================
+         PROJECT IDENTITY
+    ================================================================ -->
+    <groupId>com.caseflow</groupId>
+    <artifactId>caseflow-appeals</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <name>caseflow-appeals</name>
+    <description>
+        CaseFlow - Module 4.5 Appeals and Review Management
+        Built with Spring Boot 3.2.5 | Java 21 | MySQL
+    </description>
+
+    <!-- ================================================================
+         SPRING BOOT PARENT
+         Manages all Spring dependency versions automatically.
+         Never override versions inside <dependencies> unless needed.
+    ================================================================ -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+        <relativePath/>
+    </parent>
+
+    <!-- ================================================================
+         GLOBAL PROPERTIES
+    ================================================================ -->
+    <properties>
+        <java.version>21</java.version>
+        <spring-cloud.version>2023.0.3</spring-cloud.version>
+        <lombok.version>1.18.32</lombok.version>
+        <mysql.version>8.3.0</mysql.version>
+        <springdoc.version>2.5.0</springdoc.version>
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+    </properties>
+
+    <!-- ================================================================
+         DEPENDENCIES
+    ================================================================ -->
+    <dependencies>
+
+        <!-- ============================================================
+             1. CORE — Web + JPA + Validation
+        ============================================================ -->
+
+        <!--
+            Spring Boot Web
+            Provides: REST controllers, embedded Tomcat,
+            Jackson JSON serialization/deserialization
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+            Spring Data JPA
+            Provides: JpaRepository, @Entity, @Transactional,
+            Hibernate ORM, JPQL support
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!--
+            Bean Validation (Jakarta)
+            Provides: @Valid, @NotNull, @NotBlank, @Size,
+            @Min, @Max on DTO fields
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- ============================================================
+             2. DATABASE — MySQL
+        ============================================================ -->
+
+        <!--
+            MySQL Connector/J
+            JDBC driver for connecting to MySQL 8.x database.
+            runtime scope — not needed at compile time.
+        -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>${mysql.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- ============================================================
+             3. INTER-MODULE COMMUNICATION — OpenFeign
+        ============================================================ -->
+
+        <!--
+            Spring Cloud OpenFeign
+            Provides: @FeignClient, declarative REST client.
+            Used for calling Module 4.1 (User) and Module 4.2 (Case)
+            services without manual RestTemplate/WebClient boilerplate.
+            Requires @EnableFeignClients on main class.
+        -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <!-- ============================================================
+             4. API DOCUMENTATION — Swagger / OpenAPI 3
+        ============================================================ -->
+
+        <!--
+            SpringDoc OpenAPI (Swagger UI)
+            Provides: Auto-generated API docs at /swagger-ui.html
+            and JSON schema at /v3/api-docs
+            Compatible with Spring Boot 3.x (uses springdoc 2.x)
+            Access after running: http://localhost:8082/swagger-ui.html
+        -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+
+        <!-- ============================================================
+             5. DEVELOPER PRODUCTIVITY — Lombok + DevTools + MapStruct
+        ============================================================ -->
+
+        <!--
+            Lombok
+            Provides: @Getter, @Setter, @Builder, @NoArgsConstructor,
+            @AllArgsConstructor, @RequiredArgsConstructor, @Slf4j
+            optional=true — excluded from final JAR automatically
+        -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!--
+            Spring Boot DevTools
+            Provides: Hot reload on code change during development.
+            Automatically disabled in production JAR.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!--
+            MapStruct
+            Provides: Compile-time DTO <-> Entity mapping.
+            Alternative to manual mapper methods in service layer.
+            optional — add only if you want to replace manual mappers.
+        -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+
+        <!-- ============================================================
+             6. MONITORING & HEALTH — Actuator
+        ============================================================ -->
+
+        <!--
+            Spring Boot Actuator
+            Provides: /actuator/health, /actuator/info,
+            /actuator/metrics endpoints.
+            Required for production health checks and monitoring.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- ============================================================
+             7. SECURITY — Spring Security (optional for Phase 1)
+        ============================================================ -->
+
+        <!--
+            Spring Security
+            Provides: RBAC, JWT authentication support,
+            method-level security with @PreAuthorize.
+            Comment out if not implementing security in Phase 1.
+        -->
+        <!--
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        -->
+
+        <!-- ============================================================
+             8. TESTING
+        ============================================================ -->
+
+        <!--
+            Spring Boot Test
+            Provides: JUnit 5, Mockito, MockMvc, @SpringBootTest,
+            @WebMvcTest, @DataJpaTest, AssertJ assertions.
+            test scope — never included in production build.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            H2 In-Memory Database
+            Used ONLY during unit/integration tests.
+            Replaces MySQL so tests run without a real DB connection.
+            test scope — never included in production build.
+        -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Removed duplicate Lombok dependency -->
+
+    </dependencies>
+
+    <!-- ================================================================
+         SPRING CLOUD BOM
+         Bill of Materials — aligns all Spring Cloud dependency versions.
+         Must match the Spring Boot version used above.
+         Spring Boot 3.2.x  →  Spring Cloud 2023.0.x
+    ================================================================ -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- ================================================================
+         BUILD PLUGINS
+    ================================================================ -->
+    <build>
+        <plugins>
+
+            <!--
+                Spring Boot Maven Plugin
+                Builds the executable fat JAR: mvn clean package
+                Run with: java -jar caseflow-appeals-1.0.0.jar
+                Excludes Lombok from the final artifact.
+            -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <!--
+                Maven Compiler Plugin
+                Enforces Java 21.
+                Registers Lombok and MapStruct as annotation processors
+                so they generate code at compile time correctly.
+                Order matters: Lombok must come before MapStruct.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <!-- Lombok first -->
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <!-- MapStruct second -->
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
